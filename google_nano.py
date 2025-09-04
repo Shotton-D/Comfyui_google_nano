@@ -14,6 +14,8 @@ import numpy as np
 import torch
 from PIL import Image
 
+import random
+
 # 导入新的管理器和工具类
 from .managers import ConfigManager, ApiKeyManager, TaskLogger
 from .managers.task_logger import TaskStatus
@@ -187,6 +189,7 @@ class GoogleNanoNode:
                     "default": "",
                     "tooltip": "单图生成的提示词"
                 }),
+                "random_trigger": ("INT", {"default": random.randint(0, 1_000_000)}),
                 "file_path": ("STRING", {
                     "multiline": False, 
                     "default": "",
@@ -406,9 +409,9 @@ class GoogleNanoNode:
                 headers["X-Title"] = site_name
 
             if len(pil_refs) > 1:
-                full_prompt = f"请严格根据这些图片，并结合以下提示词，生成一张新的图片。不要描述图片。提示词：'{prompt_text}'"
+                full_prompt = f"generate a new image based on the following prompt. '{prompt_text}'"
             else:
-                full_prompt = f"请严格根据这张图片，并结合以下提示词，生成一张新的图片。不要描述图片。提示词：'{prompt_text}'"
+                full_prompt = f"generate a new image based on the following prompt. '{prompt_text}'"
 
             content = [{"type": "text", "text": full_prompt}]
             for pil_ref in pil_refs:
@@ -859,6 +862,7 @@ class GoogleNanoNode:
         api_key_main: str,
         image1=None,
         prompt: str = "",
+        random_trigger: int = 0,
         file_path: str = "",
         site_url: str = "",
         site_name: str = "",
